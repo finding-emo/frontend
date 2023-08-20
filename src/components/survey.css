@@ -1,0 +1,62 @@
+.survey h2 {
+    margin-bottom: 120px;
+  }
+
+h2 {
+    font-size: 20px!important;
+    font-weight: bold;
+    margin-top: 10px;
+ 
+  }
+
+select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    appearance: none;
+  }
+.survey select {
+    margin-top: 20px;
+  }
+.survey label {
+    margin-bottom: 20px;
+  }
+label {
+    margin-right: 20px;
+  }
+  
+select, button {
+    margin-left: 10px;
+  }
+  
+button {
+    padding: 8px 12px;
+    border: 2px solid 002333;
+    border-radius: 3px;
+    background-color: white;
+    font-size: 16px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+button:disabled {
+    background-color: rgba(21, 154, 156, .4);
+    color: white;
+    cursor: not-allowed;
+  }
+  
+button:not(:disabled) {
+    background-color: #159A9C;
+    color: white;
+    cursor: pointer;
+  }
+
+h1 {
+    position: absolute;
+    right: 160px;  /* 원하는 왼쪽 간격 조절 */
+    bottom: 79px; /* 원하는 아래쪽 간격 조절 */
+  }
