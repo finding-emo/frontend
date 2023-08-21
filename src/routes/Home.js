@@ -25,6 +25,7 @@ const Home = ({ userObj }) => {
           nweetObj={nweet}
           isOwner={nweet.creatorId === userObj.uid}
           creatorName={nweet.profileName || "anonymous"}
+
         />
         ))}
        </div>

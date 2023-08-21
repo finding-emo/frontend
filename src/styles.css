@@ -116,6 +116,7 @@ form {
   border-radius: 5px;
   object-fit: cover;
 }
+
 .factoryForm {
   display: flex;
   flex-direction: column;
@@ -174,7 +175,7 @@ form {
 }
 
 .factoryInput__label {
-  color:  #002333;
+  color: #002333;
   cursor: pointer;
 }
 
