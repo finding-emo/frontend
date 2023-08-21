@@ -1,0 +1,222 @@
+설문조사 scroll
+/기존 자바스크립트 파일 구조:
+public(index.html,manifst.json),src(components(app.js,Auth.js,Navigation.js,Nweet.js,NweetFactory.js,Router.js),routes(Auth.js,Home.js,Profile.js),fbase.js,index.js,style.css) 이렇게 구성되어 있는 코드로 자바스크립트를 통해 만들었어.
+
+/기존 전체 파일:
+
+src/components/AuthForm.js:
+'''
+import React, { useState } from "react";
+import { authService } from "fbase";
+
+const inputStyles = {};
+
+const AuthForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [newAccount, setNewAccount] = useState(true);
+  const [error, setError] = useState("");
+  const onChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    if (name === "email") {
+      setEmail(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      let data;
+      if (newAccount) {
+        data = await authService.createUserWithEmailAndPassword(
+          email,
+          password
+        );
+      } else {
+        data = await authService.signInWithEmailAndPassword(email, password);
+      }
+      console.log(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+  const toggleAccount = () => setNewAccount((prev) => !prev);
+  return (
+    <>
+      <form onSubmit={onSubmit} className="container">
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+          value={email}
+          onChange={onChange}
+          className="authInput"
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          required
+          value={password}
+          className="authInput"
+          onChange={onChange}
+        />
+        <input
+          type="submit"
+          className="authInput authSubmit"
+          value={newAccount ? "Create Account" : "Sign In"}
+        />
+        {error && <span className="authError">{error}</span>}
+      </form>
+      <span onClick={toggleAccount} className="authSwitch">
+        {newAccount ? "Sign In" : "Create Account"}
+      </span>
+    </>
+  );
+};
+export default AuthForm;
+'''
+src/components/Router.js:
+'''
+import React from "react";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import Auth from "routes/Auth";
+import Home from "routes/Home";
+import Profile from "routes/Profile";
+import Navigation from "components/Navigation";
+
+const AppRouter = ({ refreshUser, isLoggedIn, userObj }) => {
+  return (
+    <Router>
+      {isLoggedIn && <Navigation userObj={userObj} />}
+      <Switch>
+        {isLoggedIn ? (
+          <div
+          style={{
+            maxWidth: 890,
+            width: "100%",
+            margin: "0 auto",
+            marginTop: 80,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+            <Route exact path="/">
+            <Home userObj={userObj} />
+            </Route>
+            <Route exact path="/profile">
+            <Profile userObj={userObj} refreshUser={refreshUser} />
+            </Route>
+          </div>
+        ) : (
+          <>
+            <Route exact path="/">
+              <Auth />
+            </Route>
+        </>
+        )}
+      </Switch>
+    </Router>
+  );
+};
+export default AppRouter;
+'''
+src/routes/Auth.js:
+'''
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTwitter,
+  faGoogle,
+  faGithub,
+} from "@fortawesome/free-brands-svg-icons";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { authService, firebaseInstance } from "fbase";
+import AuthForm from "components/AuthForm";
+
+const Auth = () => {
+    const onSocialClick = async (event) => {
+        const {
+          target: { name },
+        } = event;
+        let provider;
+        if (name === "google") {
+          provider = new firebaseInstance.auth.GoogleAuthProvider();
+        } 
+        await authService.signInWithPopup(provider);
+      };
+    return (
+      <div className="authContainer">
+      <FontAwesomeIcon
+        icon={faComment}
+        color={"#04AAFF"}
+        size="3x"
+        style={{ marginBottom: 30 }}
+      />
+        <AuthForm />
+        <div className="authBtns">
+        <button onClick={onSocialClick} name="google" className="authBtn">
+          구글 계정으로 로그인 <FontAwesomeIcon icon={faGoogle} />
+        </button>
+        </div>
+      </div>
+    );
+  };
+export default Auth
+'''
+src/fbase.js:
+'''
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+import "firebase/storage";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqA00mfJM56hXHzp8JThuzCMCAi4Jxx50",
+  authDomain: "nwitter-6d6ae.firebaseapp.com",
+  projectId: "nwitter-6d6ae",
+  storageBucket: "nwitter-6d6ae.appspot.com",
+  messagingSenderId: "640695840076",
+  appId: "1:640695840076:web:a8d9743af10998bd1833e9"
+};
+  
+
+firebase.initializeApp(firebaseConfig);
+
+export const firebaseInstance = firebase;
+
+export const authService = firebase.auth();
+export const dbService = firebase.firestore();
+export const storageService = firebase.storage();
+'''
+
+
+/사용한 툴:
+firebase(npm install firebase@8.8.0), react(npm i react-router-dom@5.3.0), nvm use 14로 구버전 노드 사용
+
+/현재 구현 완료한 기능:
+로그인 기능,프로필 이름 편집 기능,실시간 글 올리기 기능,실시간 사진 올리기 기능 
+
+/추가하고자 하는 기능:
+1.회원가입한 후에 바로 로그인이 아닌 이모티콘의 취향을 조사하는 설문조사 페이지로 이동 후 설문조사가 완료되면 로그인하는 구조로 수정
+2.설문조사 페이지를 flow별로 3페이지 구성
+3.설문조사한 내용은 firebase에 사용자별로 저장하기
+
+/설문조사 flow
+1.이모티콘의 종류 묻기:
+동물(강아지 / 고양이 / 토끼 / 곰 / 펭귄),캐릭터(학생/ 직장인 / 아줌마 / 아저씨 / 공주 / 왕자 / 상남자 / 상여자),메시지(손글씨 / 전광판 / 편지 / 네온사인)라는 3가지의 큰 카테고리가 있고, 해당 카테고리를 클릭 시 강아지,고양이 등과 같은 세부 종류가 토글 형식으로 나오는 형식
+->카테고리와 세부종류는 각각 하나씩만 선택가능하도록
+2.이모티콘의 분위기 묻기:
+귀여운/재밌는/시크한/동화 같은/사진 같은/단순한/못생긴의 선택지를 주고 각 선택지 옆에 있는 체크 박스 클릭 시, 선택되도록
+-> 마찬가지로 분위기는 하나씩만 선택 가능
+3. 이모티콘의 색감 묻기:
+파스텔,흑백,비비드 3가지 선택지 주고, 각 선택지 옆에 있는 체크 박스 클릭시 선택되도록
+-> 마찬가지로 분위기는 하나씩만 선택 가능 
+
+//최종 요청사항:
+기존 파일 구조, 구현한 기능, 사용한 툴 등을 참고하며, 내가 추가하고자 하는 기능을 추가하려면 어떻게 코드를 고쳐야 하는 지 최대한 자세하게 코드를 통해 알려줘. 
+이때 어떤 파일을 어디에 추가해야 하고, 코드를 구체적으로 어떻게 고쳐야 하는 지를 상세히 설명해줘.
