@@ -6,7 +6,7 @@ import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 const Nweet = ({ nweetObj, isOwner, creatorName }) => {
   const [editing, setEditing] = useState(false);
   const [newNweet, setNewNweet] = useState(nweetObj.text);
-  const { text, attachmentUrl, emojiUrl } = nweetObj;
+  const {text, attachmentUrl, emojiUrl } = nweetObj;
 
   const onDeleteClick = async () => {
     const ok = window.confirm("삭제하시겠습니까?");

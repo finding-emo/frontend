@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { dbService, storageService } from "fbase";
 import Nweet from "components/Nweet";
-import NweetFactory from "components/NweetFactory";
+import NweetFactory  from "components/NweetFactory";
 
 const Home = ({ userObj }) => {
     const [nweets, setNweets] = useState([]);
+    
     useEffect(() => {
     dbService.collection("nweets").onSnapshot((snapshot) => {
       const nweetArray = snapshot.docs.map((doc) => ({

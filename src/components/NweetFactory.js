@@ -36,14 +36,14 @@ const NweetFactory = ({ userObj }) => {
       attachmentUrl,
       emoji: selectedEmoji,
       profileName: userObj.displayName || "user",
-      emojiUrl: selectedEmoji ? selectedEmoji.url : null
+      emojiUrl: selectedEmoji && selectedEmoji.url ? selectedEmoji.url : null,
     };
 
     await dbService.collection("nweets").add(nweetObj);
     setNweet("");
     setAttachment("");
     setEmojis([]);
-    setSelectedEmoji(null);
+    setSelectedEmoji("");
   };
 
   const onEmojiButtonClick = async () => {
@@ -52,11 +52,18 @@ const NweetFactory = ({ userObj }) => {
       return;
     }
   
-    const results = await getEmojisFromAPI(nweet, userObj.uid);
-    setEmojis(results||[]);
-    console.log("이모티콘 데이터: ", results);
-    setEmojis(results);
-    
+    try {
+      const results = await getEmojisFromAPI(nweet, userObj.uid);
+      if (!results || results.length === 0) {
+        console.log("API에서 반환된 이모티콘 데이터가 없습니다.");
+        setEmojis([]);
+      } else {
+        setEmojis(results);
+      }
+      console.log("이모티콘 데이터: ", results);
+    } catch (error) {
+      console.error("이모티콘 조회에 실패했습니다:", error);
+    }
   };
  
   const onChange = (event) => {
@@ -104,7 +111,6 @@ const NweetFactory = ({ userObj }) => {
        {emojis.length > 0 && (
   <div className="emojiPreview">
     {emojis.map((emoji, idx) => {
-      console.log("이모티콘 URL: ", emoji.url || emoji);
       return (
         <img
           key={idx}
@@ -124,4 +130,3 @@ const NweetFactory = ({ userObj }) => {
   
 };
 export default NweetFactory; 
-

@@ -16,7 +16,8 @@ export const getEmojisFromAPI = async (text, clientId) => {
       clientId,
     });
     console.log("API Response: ", response);
-    const emojis = response.data.emojis || [];
+    const emojis = response.data.emoticonUrls;
+    console.log(emojis);
     return emojis;
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error.response.data);
